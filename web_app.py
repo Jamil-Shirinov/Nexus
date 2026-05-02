@@ -19,9 +19,17 @@ from web3_audit import get_audit_trail
 
 
 # Pydantic models for API
+class CaseData(BaseModel):
+    objective: str = ""
+    jurisdictions: str = ""
+    timeline: str = ""
+    conflict: str = ""
+
+
 class QueryRequest(BaseModel):
-    query: str
-    include_audit: bool = True
+    query: Optional[str] = None
+    include_audit: bool = False
+    case_data: Optional[CaseData] = None
 
 
 class DebateResponse(BaseModel):
@@ -41,6 +49,30 @@ class DebateResponse(BaseModel):
 class AuditRequest(BaseModel):
     debate_hash: str
     session_id: Optional[str]
+
+
+def build_structured_query(request: QueryRequest) -> str:
+    """Normalize the case submission into a single query string for the council."""
+    if request.case_data:
+        case_data = request.case_data
+        sections = []
+
+        if case_data.objective.strip():
+            sections.append(f"Objective: {case_data.objective.strip()}")
+        if case_data.jurisdictions.strip():
+            sections.append(f"Jurisdictions: {case_data.jurisdictions.strip()}")
+        if case_data.timeline.strip():
+            sections.append(f"Timeline: {case_data.timeline.strip()}")
+        if case_data.conflict.strip():
+            sections.append(f"Alternatives: {case_data.conflict.strip()}")
+
+        if sections:
+            return "\n".join(["Business compliance scenario:", *sections])
+
+    if request.query and request.query.strip():
+        return request.query.strip()
+
+    raise HTTPException(status_code=422, detail="Please provide a case objective before submitting.")
 
 
 # Initialize FastAPI app
@@ -402,7 +434,8 @@ async def root():
                 <h2>📁 Case File Submission</h2>
                 <span class="case-file-badge">CONFIDENTIAL</span>
             </div>
-            
+
+            <form id="caseForm">
             <div class="input-grid">
                 <div class="input-field">
                     <label class="field-label">
@@ -414,6 +447,7 @@ async def root():
                         id="objectiveInput" 
                         class="field-input" 
                         placeholder="e.g., Transporting 5,000 lbs of hemp biomass to a processing lab."
+                        required
                     ></textarea>
                 </div>
                 
@@ -460,11 +494,12 @@ async def root():
             </div>
             
             <div class="submit-section">
-                <button id="submitBtn" class="submit-btn" onclick="submitQuery()">
+                <button id="submitBtn" class="submit-btn" type="submit">
                     <span>📊</span>
-                    <span>Submit Case to Council</span>
+                    <span id="submitBtnLabel">Submit Case to Council</span>
                 </button>
             </div>
+            </form>
         </div>
         
         <div id="loadingSection" class="loading" style="display: none;">
@@ -531,8 +566,60 @@ async def root():
     <script>
         let currentSession = null;
         let currentHash = null;
+
+        function buildStructuredQuery(caseData) {
+            const sections = [];
+
+            if (caseData.objective) {
+                sections.push(`Objective: ${caseData.objective}`);
+            }
+            if (caseData.jurisdictions) {
+                sections.push(`Jurisdictions: ${caseData.jurisdictions}`);
+            }
+            if (caseData.timeline) {
+                sections.push(`Timeline: ${caseData.timeline}`);
+            }
+            if (caseData.conflict) {
+                sections.push(`Alternatives: ${caseData.conflict}`);
+            }
+
+            return ['Business compliance scenario:', ...sections].join('\\n');
+        }
+
+        function setSubmitting(isSubmitting) {
+            const submitBtn = document.getElementById('submitBtn');
+            const submitBtnLabel = document.getElementById('submitBtnLabel');
+
+            submitBtn.disabled = isSubmitting;
+            submitBtn.setAttribute('aria-busy', isSubmitting ? 'true' : 'false');
+            submitBtnLabel.textContent = isSubmitting
+                ? 'Council Deliberating...'
+                : 'Submit Case to Council';
+
+            document.getElementById('loadingSection').style.display = isSubmitting ? 'block' : 'none';
+            document.querySelectorAll('.agent-card').forEach(card => {
+                card.classList.toggle('active', isSubmitting);
+            });
+        }
+
+        function resetResults() {
+            currentSession = null;
+            currentHash = null;
+
+            document.getElementById('legalContent').textContent = 'Council is reviewing the case...';
+            document.getElementById('taxContent').textContent = 'Council is reviewing the case...';
+            document.getElementById('growthContent').textContent = 'Council is reviewing the case...';
+            document.getElementById('decisionContent').textContent = '';
+            document.getElementById('auditHash').textContent = '';
+            document.getElementById('decisionSection').style.display = 'none';
+            document.getElementById('auditSection').style.display = 'none';
+        }
         
-        async function submitQuery() {
+        async function submitQuery(event) {
+            if (event) {
+                event.preventDefault();
+            }
+
             // Get all 4 input field values
             const objective = document.getElementById('objectiveInput').value.trim();
             const jurisdictions = document.getElementById('jurisdictionsInput').value.trim();
@@ -545,47 +632,32 @@ async def root():
                 return;
             }
             
-            // Create structured query from the 4 fields
-            let structuredQuery = "The User has a compliance query.\n";
-            structuredQuery += `**Objective:** ${objective}\n`;
-            if (jurisdictions) {
-                structuredQuery += `**Jurisdictions:** ${jurisdictions}\n`;
-            }
-            if (timeline) {
-                structuredQuery += `**Timeline:** ${timeline}\n`;
-            }
-            if (conflict) {
-                structuredQuery += `**Alternatives:** ${conflict}\n`;
-            }
-            structuredQuery += "Agents, debate this specific scenario.";
-            
-            // Reset UI
-            document.getElementById('submitBtn').disabled = true;
-            document.getElementById('loadingSection').style.display = 'block';
-            document.getElementById('decisionSection').style.display = 'none';
-            document.getElementById('auditSection').style.display = 'none';
-            
-            // Mark agents as active
-            document.querySelectorAll('.agent-card').forEach(card => {
-                card.classList.add('active');
-            });
+            const caseData = {
+                objective,
+                jurisdictions,
+                timeline,
+                conflict
+            };
+
+            resetResults();
+            setSubmitting(true);
             
             try {
                 const response = await fetch('/api/debate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
-                        query: structuredQuery,
-                        case_data: {
-                            objective: objective,
-                            jurisdictions: jurisdictions,
-                            timeline: timeline,
-                            conflict: conflict
-                        }
+                        query: buildStructuredQuery(caseData),
+                        include_audit: false,
+                        case_data: caseData
                     })
                 });
                 
-                const data = await response.json();
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) {
+                    throw new Error(data.detail || `Request failed with status ${response.status}`);
+                }
+
                 currentSession = data.session_id;
                 currentHash = data.debate_hash;
                 
@@ -607,15 +679,16 @@ async def root():
                     document.getElementById('auditHash').textContent = data.debate_hash;
                     document.getElementById('auditSection').style.display = 'block';
                 }
+
+                document.getElementById('decisionSection').scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
                 
             } catch (error) {
                 alert('Error: ' + error.message);
             } finally {
-                document.getElementById('submitBtn').disabled = false;
-                document.getElementById('loadingSection').style.display = 'none';
-                document.querySelectorAll('.agent-card').forEach(card => {
-                    card.classList.remove('active');
-                });
+                setSubmitting(false);
             }
         }
         
@@ -658,6 +731,10 @@ async def root():
             if (!text) return 'Processing decision...';
             return formatAgentResponse(text);
         }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('caseForm').addEventListener('submit', submitQuery);
+        });
     </script>
 </body>
 </html>
@@ -674,16 +751,17 @@ async def run_debate(request: QueryRequest, background_tasks: BackgroundTasks):
     try:
         # Generate session ID
         session_id = str(uuid.uuid4())
+        normalized_query = build_structured_query(request)
         
         # Run deliberation
-        result = await council.deliberate(request.query)
+        result = await council.deliberate(normalized_query)
         
         # Store audit trail if requested
         audit_tx = None
         if request.include_audit and result.get("debate_hash"):
             audit_tx = await audit_trail.store_audit_on_chain(
                 result["debate_hash"],
-                metadata={"session_id": session_id, "query": request.query}
+                metadata={"session_id": session_id, "query": normalized_query}
             )
         
         # Store session
@@ -696,7 +774,7 @@ async def run_debate(request: QueryRequest, background_tasks: BackgroundTasks):
         # Build response
         return DebateResponse(
             session_id=session_id,
-            query=request.query,
+            query=normalized_query,
             legal_analysis=result.get("legal_analysis"),
             tax_analysis=result.get("tax_analysis"),
             growth_analysis=result.get("growth_analysis"),

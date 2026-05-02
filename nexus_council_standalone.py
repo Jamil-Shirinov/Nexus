@@ -245,15 +245,15 @@ class NexusCouncil:
         print(f"Query: {query}")
         print("-"*60)
         
-        # Initial analysis from each agent
+        # Run the three analyses concurrently so the submit response returns faster.
         print("\n⚖️  Legal Scholar analyzing...")
-        legal_analysis = await self.legal_agent.analyze(query)
-        
         print("💰 Tax Comptroller analyzing...")
-        tax_analysis = await self.tax_agent.analyze(query)
-        
         print("🚀 Growth Hacker analyzing...")
-        growth_analysis = await self.growth_agent.analyze(query)
+        legal_analysis, tax_analysis, growth_analysis = await asyncio.gather(
+            self.legal_agent.analyze(query),
+            self.tax_agent.analyze(query),
+            self.growth_agent.analyze(query),
+        )
         
         # Simulate debate rounds
         debate_rounds = [
