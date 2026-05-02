@@ -286,12 +286,8 @@ async def root():
         .hero-kicker {
             font-size: 0.98rem;
             font-weight: 700;
-            color: #113a5d;
+            color: #ffffff;
             letter-spacing: 0.08em;
-            text-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.92),
-                0 0 14px rgba(255, 255, 255, 0.36),
-                0 8px 18px rgba(9, 60, 117, 0.12);
             margin-bottom: 16px;
         }
 
@@ -299,42 +295,23 @@ async def root():
             font-size: clamp(3rem, 6vw, 5rem);
             margin-bottom: 14px;
             font-weight: 700;
-            color: #0f3252;
+            color: #ffffff;
             letter-spacing: 0.04em;
-            -webkit-text-stroke: 1px rgba(228, 246, 255, 0.74);
-            text-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.96),
-                0 3px 0 rgba(210, 236, 255, 0.82),
-                0 0 22px rgba(255, 255, 255, 0.34),
-                0 16px 28px rgba(9, 73, 138, 0.18);
         }
 
         .header p {
             font-size: 1.2rem;
-            opacity: 0.95;
-        }
-
-        .hero-subtitle,
-        .hero-meta {
-            max-width: 760px;
-            margin: 0 auto;
-            color: #1b4d75;
-            text-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.94),
-                0 0 12px rgba(255, 255, 255, 0.28),
-                0 8px 18px rgba(8, 62, 120, 0.1);
+            opacity: 1;
         }
 
         .hero-subtitle {
+            max-width: 760px;
+            margin: 0 auto;
             font-size: 1.22rem;
+            font-weight: 700;
             line-height: 1.7;
-            margin-bottom: 12px;
-        }
-
-        .hero-meta {
-            font-size: 0.95rem;
-            color: #2b628d;
-            margin-bottom: 24px;
+            margin-bottom: 28px;
+            color: #ffffff;
         }
 
         .hero-chips {
@@ -347,17 +324,77 @@ async def root():
         .hero-chip {
             padding: 10px 16px;
             border-radius: 999px;
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.8), rgba(223, 248, 255, 0.34));
-            border: 1px solid rgba(255, 255, 255, 0.82);
-            box-shadow:
-                inset 0 1px 0 rgba(255, 255, 255, 0.96),
-                0 12px 28px rgba(37, 104, 168, 0.12);
+            background: rgba(8, 52, 96, 0.42);
+            border: 1px solid rgba(255, 255, 255, 0.45);
             font-size: 0.92rem;
             font-weight: 600;
-            color: #19496e;
-            text-shadow:
-                0 1px 0 rgba(255, 255, 255, 0.94),
-                0 0 8px rgba(255, 255, 255, 0.18);
+            color: #ffffff;
+        }
+
+        .page-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-top: 10px;
+            margin-bottom: 6px;
+        }
+
+        .page-tab {
+            position: relative;
+            font: inherit;
+            cursor: pointer;
+            padding: 12px 30px;
+            border-radius: 999px;
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            background: rgba(8, 52, 96, 0.42);
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            transition: transform 0.22s ease, background 0.22s ease, border-color 0.22s ease;
+        }
+
+        .page-tab:hover {
+            transform: translateY(-2px);
+        }
+
+        .page-tab[aria-selected="true"] {
+            background: rgba(6, 40, 78, 0.72);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.65);
+        }
+
+        .page-tab:focus-visible {
+            outline: 2px solid #ffffff;
+            outline-offset: 3px;
+        }
+
+        .about-subhead {
+            font-size: 1.14rem;
+            font-weight: 700;
+            color: #20597f;
+            margin: 22px 0 10px;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.92);
+        }
+
+        .about-subhead:first-of-type {
+            margin-top: 0;
+        }
+
+        .about-list {
+            margin: 12px 0 0 22px;
+            color: #1a4a6e;
+            line-height: 1.75;
+            font-size: 1.02rem;
+        }
+
+        .about-list li {
+            margin-bottom: 10px;
+        }
+
+        .about-list strong {
+            color: #12558d;
         }
 
         .case-file-section,
@@ -843,14 +880,18 @@ async def root():
             <p class="hero-kicker">Bright Compliance Guidance For Modern Teams</p>
             <h1>Nexus Council</h1>
             <p class="hero-subtitle">Clean technology, calm visuals, and clear legal tradeoffs for every case you submit.</p>
-            <p class="hero-meta">Powered By SpoonOS Multi-Agent Framework</p>
             <div class="hero-chips">
                 <span class="hero-chip">Clear Risk Signals</span>
                 <span class="hero-chip">Friendly Liquid Controls</span>
                 <span class="hero-chip">Nature And Tech Balance</span>
             </div>
+            <nav class="page-tabs" role="tablist" aria-label="Site sections">
+                <button type="button" class="page-tab" role="tab" id="tabCouncil" aria-selected="true" aria-controls="tabPanelCouncil">Council</button>
+                <button type="button" class="page-tab" role="tab" id="tabAbout" aria-selected="false" aria-controls="tabPanelAbout">About</button>
+            </nav>
         </div>
         
+        <div class="tab-panel" id="tabPanelCouncil" role="tabpanel" aria-labelledby="tabCouncil">
         <div class="case-file-section">
             <div class="case-file-header">
                 <h2>📁 Case File Submission</h2>
@@ -986,6 +1027,63 @@ async def root():
             <button class="mint-btn" onclick="mintAudit()">
                 ⛓️ Record Audit Trail
             </button>
+        </div>
+        </div>
+
+        <div class="tab-panel" id="tabPanelAbout" role="tabpanel" aria-labelledby="tabAbout" hidden>
+            <div class="case-file-section">
+                <div class="case-file-header">
+                    <h2>Our purpose</h2>
+                    <span class="case-file-badge">Nexus Council</span>
+                </div>
+                <p class="case-file-intro">Nexus Council exists so teams can make <strong>informed business decisions</strong> when law, tax, and growth pull in different directions. Instead of a single flat answer, you see how each lens reads the same facts so leadership can choose with eyes open.</p>
+                <h3 class="about-subhead">The problem we solve</h3>
+                <p class="case-file-intro">Compliance and expansion advice is often siloed, overly cautious, or disconnected from commercial reality. Stakeholders get one narrative and miss the tradeoffs. We surface <strong>structured disagreement</strong>—legal risk, fiscal exposure, and upside—then synthesize them into guidance you can act on.</p>
+            </div>
+
+            <div class="case-file-section">
+                <div class="case-file-header">
+                    <h2>How the three agents deliberate</h2>
+                    <span class="case-file-badge">Multi-agent</span>
+                </div>
+                <p class="case-file-intro">Each specialist starts from a different mandate. They do not rubber-stamp one another; they stress-test assumptions so the final view is earned, not assumed.</p>
+                <ul class="about-list">
+                    <li><strong>Dr. Miranda Blackstone (Legal Scholar)</strong> maps regulatory exposure, precedent, and what could go wrong if assumptions fail.</li>
+                    <li><strong>Harold P. Pennywhistle (Tax Comptroller)</strong> focuses on fiscal structure, reporting, and where the numbers change the story.</li>
+                    <li><strong>Blake Morrison (Growth Hacker)</strong> pushes for velocity, market timing, and opportunity cost if you wait too long.</li>
+                </ul>
+                <p class="case-file-intro" style="margin-top: 18px;">The council compares these threads, resolves tensions where possible, and delivers a <strong>balanced conclusion</strong>—so you see both the guardrails and the runway before you commit.</p>
+            </div>
+
+            <div class="case-file-section">
+                <div class="case-file-header">
+                    <h2>Why Frutiger Aero</h2>
+                    <span class="case-file-badge">Design</span>
+                </div>
+                <p class="case-file-intro">We leaned into <strong>Frutiger Aero</strong>—glossy panels, sky-and-field gradients, glassy surfaces, and optimistic nature-tech harmony—because high-stakes decisions deserve an interface that feels <em>human and hopeful</em>, not cold or clinical.</p>
+                <h3 class="about-subhead">Compared with strict minimalism</h3>
+                <ul class="about-list">
+                    <li><strong>Depth and affordance</strong>: Skeuomorphic gloss and light cues signal what is clickable and what is content, reducing cognitive load for first-time visitors.</li>
+                    <li><strong>Emotional clarity</strong>: Warm gradients and organic shapes echo calm weather and open horizons—useful when the subject matter is stressful.</li>
+                    <li><strong>Memorable identity</strong>: Another gray dashboard blends in; Aero gives Nexus a distinctive voice without sacrificing readability.</li>
+                </ul>
+                <p class="case-file-intro" style="margin-top: 18px;">Minimalism excels at density; we chose Aero to pair <strong>rigor in the reasoning</strong> with a UI that invites exploration and trust.</p>
+            </div>
+
+            <div class="case-file-section">
+                <div class="case-file-header">
+                    <h2>Roadmap and how we can improve</h2>
+                    <span class="case-file-badge">Next</span>
+                </div>
+                <p class="case-file-intro">We want Nexus to feel indispensable for real operating decisions—not a one-off demo.</p>
+                <ul class="about-list">
+                    <li><strong>Richer debate</strong>: Optional multi-round exchanges and explicit dissent capture for audit trails.</li>
+                    <li><strong>Domain packs</strong>: Jurisdiction-specific playbooks and citation links users can verify.</li>
+                    <li><strong>Team workflows</strong>: Shared cases, comments, and exports for legal and finance stakeholders.</li>
+                    <li><strong>Evaluation and safety</strong>: Clear confidence signals, refusal boundaries, and human-in-the-loop review for edge cases.</li>
+                </ul>
+                <p class="case-file-intro" style="margin-top: 18px;">Your feedback on which tradeoffs matter most will steer what we build next.</p>
+            </div>
         </div>
     </div>
     
@@ -1158,8 +1256,22 @@ async def root():
             return formatAgentResponse(text);
         }
 
+        function setMainTab(which) {
+            const councilTab = document.getElementById('tabCouncil');
+            const aboutTab = document.getElementById('tabAbout');
+            const councilPanel = document.getElementById('tabPanelCouncil');
+            const aboutPanel = document.getElementById('tabPanelAbout');
+            const onCouncil = which === 'council';
+            councilTab.setAttribute('aria-selected', onCouncil ? 'true' : 'false');
+            aboutTab.setAttribute('aria-selected', onCouncil ? 'false' : 'true');
+            councilPanel.hidden = !onCouncil;
+            aboutPanel.hidden = onCouncil;
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             document.getElementById('caseForm').addEventListener('submit', submitQuery);
+            document.getElementById('tabCouncil').addEventListener('click', () => setMainTab('council'));
+            document.getElementById('tabAbout').addEventListener('click', () => setMainTab('about'));
         });
     </script>
 </body>
