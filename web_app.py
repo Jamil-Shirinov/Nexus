@@ -1072,17 +1072,17 @@ async def root():
 
             <div class="case-file-section">
                 <div class="case-file-header">
-                    <h2>Roadmap and how we can improve</h2>
+                    <h2>What we plan to improve</h2>
                     <span class="case-file-badge">Next</span>
                 </div>
-                <p class="case-file-intro">We want Nexus to feel indispensable for real operating decisions—not a one-off demo.</p>
+                <p class="case-file-intro">We want Nexus to be something teams use week after week—not a one-time novelty. Here is what we are working toward next.</p>
                 <ul class="about-list">
-                    <li><strong>Richer debate</strong>: Optional multi-round exchanges and explicit dissent capture for audit trails.</li>
-                    <li><strong>Domain packs</strong>: Jurisdiction-specific playbooks and citation links users can verify.</li>
-                    <li><strong>Team workflows</strong>: Shared cases, comments, and exports for legal and finance stakeholders.</li>
-                    <li><strong>Evaluation and safety</strong>: Clear confidence signals, refusal boundaries, and human-in-the-loop review for edge cases.</li>
+                    <li><strong>Longer debates</strong>: Let the three agents reply to each other in more than one pass, and show clearly when they still disagree after the back-and-forth.</li>
+                    <li><strong>Guides by region</strong>: Add ready-made tips for specific countries or states, with links to official sources so you can double-check the law yourself.</li>
+                    <li><strong>Sharing and saving</strong>: Let you save a case, invite coworkers, leave notes, and download a summary you can attach to email or Slack.</li>
+                    <li><strong>Honesty about limits</strong>: Say plainly when the model is guessing or when the question needs a real lawyer or accountant. Add a path to escalate tricky cases to a human expert.</li>
                 </ul>
-                <p class="case-file-intro" style="margin-top: 18px;">Your feedback on which tradeoffs matter most will steer what we build next.</p>
+                <p class="case-file-intro" style="margin-top: 18px;">Tell us which of these would help you most—we will prioritize what matters to real users.</p>
             </div>
         </div>
     </div>
